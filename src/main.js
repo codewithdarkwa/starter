@@ -1,14 +1,21 @@
+import { Client, Databases } from "node-appwrite";
+
+const PROJECT_ID = process.env.PROJECT_ID
+const DATABASE_ID = process.env.DATABASE_ID;
+const COLLECTION_ID_TASKS = process.env.COLLECTION_ID_TASKS;
+
 
 export default async({req, res, log, error}) => {
 
-  if(req.method == 'GET'){
-    return res.send('Get Request');
-  }
+  const client = new Client()
+  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setProject(PROJECT_ID)
 
-  if(req.method == 'POST'){
-    return res.json({
-      'data': req.body,
-    })
+  const db = new Databases(client)
+
+  if(req.method == 'GET'){
+    const response = await db.listDocuments(DATABASE_ID, COLLECTION_ID_TASKS);
+    return res.json(response.documents);
   }
   
 }
