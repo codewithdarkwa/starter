@@ -15,7 +15,9 @@ export default async({req, res, log, error}) => {
   if (req.method == 'POST' && req.path == '/logout') {
     try {
       const userId = req.body.userId;
+      log(userId)
       const users = new Users(client);
+      log(users)
       await users.deleteSession(userId, 'current');
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
