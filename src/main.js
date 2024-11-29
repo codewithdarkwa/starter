@@ -26,7 +26,7 @@ export default async({req, res, log, error}) => {
       }
 
 
-      const users = new Users(client);
+      const users = new Account(client);
       await users.deleteSession(userId, sessionId);
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
