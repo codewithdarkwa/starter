@@ -1,4 +1,4 @@
-import { Client, Databases, Users } from "node-appwrite";
+import { Client, Databases, Users, Account } from "node-appwrite";
 
 const PROJECT_ID = process.env.PROJECT_ID
 const DATABASE_ID = process.env.DATABASE_ID;
@@ -16,9 +16,8 @@ export default async({req, res, log, error}) => {
     try {
       const userId = req.body.userId;
       log(userId)
-      const users = new Users(client);
-      log(users)
-      await users.deleteSession(userId, 'current');
+      const account = new Account(client);
+      await account.deleteSession(userId, 'current');
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
       error("Logout failed: " + err.message);
