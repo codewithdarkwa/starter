@@ -13,22 +13,23 @@ export default async({req, res, log, error}) => {
   .setKey(process.env.APPWRITE_SERVER_API_KEY);
 
 
-// Logout
   if (req.method == 'POST' && req.path == '/logout') {
     try {
       const userId = req.body.userId;
+      const sessionId = req.body.sessionId;
       log(userId)
+      log(sessionId)
 
-      if (!userId) {
+      if (!userId || !sessionId) {
         return res.json({ 
           success: false, 
-          message: 'User ID is required' 
+          message: 'User ID and Session ID is required' 
         }, 400);
       }
 
 
       const users = new Users(client);
-      await users.deleteSession(userId, 'current');
+      await users.deleteSession(userId, sessionId);
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
       error("Logout failed: " + err.message);
@@ -37,7 +38,8 @@ export default async({req, res, log, error}) => {
   }
 
   const db = new Databases(client)
-// Databases
+
+
   if(req.method == 'GET'){
     const response = await db.listDocuments(DATABASE_ID, COLLECTION_ID_TASKS);
     return res.json(response.documents);
