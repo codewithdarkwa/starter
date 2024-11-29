@@ -16,12 +16,21 @@ export default async({req, res, log, error}) => {
     try {
       const userId = req.body.userId;
       log(userId)
-      const account = new Account(client);
-      await account.deleteSession(userId, 'current');
+
+      if (!userId) {
+        return res.json({ 
+          success: false, 
+          message: 'User ID is required' 
+        }, 400);
+      }
+
+
+      const users = new Users(client);
+      await users.deleteSession(userId, 'current');
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
       error("Logout failed: " + err.message);
-      return res.status(500).json({ success: false, message: 'Logout failed' });
+      return res.json({ success: false, message: 'Logout failed' });
     }
   }
 
