@@ -10,6 +10,8 @@ export default async({req, res, log, error}) => {
   const client = new Client()
   .setEndpoint('https://cloud.appwrite.io/v1')
   .setProject(PROJECT_ID)
+  .setKey(process.env.APPWRITE_SERVER_API_KEY);
+
 
 // Logout
   if (req.method == 'POST' && req.path == '/logout') {
