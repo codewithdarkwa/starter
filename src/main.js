@@ -1,4 +1,4 @@
-import { Client, Databases } from "node-appwrite";
+import { Client, Databases, Users } from "node-appwrite";
 
 const PROJECT_ID = process.env.PROJECT_ID
 const DATABASE_ID = process.env.DATABASE_ID;
@@ -11,12 +11,28 @@ export default async({req, res, log, error}) => {
   .setEndpoint('https://cloud.appwrite.io/v1')
   .setProject(PROJECT_ID)
 
-  const db = new Databases(client)
+// Logout
+  if (req.method == 'POST' && req.path == '/logout') {
+    try {
+      const userId = req.body.userId;
+      const users = new Users(client);
+      await users.deleteSession(userId, 'current');
+      return res.json({ success: true, message: 'User logged out successfully' });
+    } catch (err) {
+      error("Logout failed: " + err.message);
+      return res.status(500).json({ success: false, message: 'Logout failed' });
+    }
+  }
 
+  const db = new Databases(client)
+// Databases
   if(req.method == 'GET'){
     const response = await db.listDocuments(DATABASE_ID, COLLECTION_ID_TASKS);
     return res.json(response.documents);
   }
+
+
+
   
 }
 
