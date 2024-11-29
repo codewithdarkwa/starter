@@ -17,8 +17,6 @@ export default async({req, res, log, error}) => {
     try {
       const userId = req.body.userId;
       const sessionId = req.body.sessionId;
-      log(userId)
-      log(sessionId)
 
       if (!userId || !sessionId) {
         return res.json({ 
