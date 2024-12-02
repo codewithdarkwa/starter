@@ -30,11 +30,12 @@ export default async({req, res, log, error}) => {
       }
 
       try {
-        const subscriptions = await messaging.listSubscribers();
+        const subscriptions = await messaging.listSubscribers('6745c75f00118025ce9a');
         log(subscriptions);
         const userSubscriptions = subscriptions.subscribers.filter(
           sub => sub.targetId === userId
         );
+
         for (const subscription of userSubscriptions) {
           await messaging.deleteSubscriber(subscription.$id);
         }
