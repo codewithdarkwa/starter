@@ -29,21 +29,19 @@ export default async({req, res, log, error}) => {
         }, 400);
       }
 
-      // try {
-      //   const subscriptions = await messaging.listSubscribers('6745c75f00118025ce9a');
-      //   log(subscriptions);
-      //   const userSubscriptions = subscriptions.subscribers.filter(
-      //     sub => sub.targetId === userId
-      //   );
+      try {
+        const subscriptions = await messaging.listSubscribers('6745c75f00118025ce9a');
+        log(subscriptions);
+        const userSubscriptions = subscriptions.subscribers.filter(sub => sub.targetId === userId);
 
-      //   for (const subscription of userSubscriptions) {
-      //     await messaging.deleteSubscriber(subscription.$id);
-      //   }
+        for (const subscription of userSubscriptions) {
+          await messaging.deleteSubscriber(subscription.$id);
+        }
 
-      //   log(`Unsubscribed user ${userId} from ${userSubscriptions.length} topics`);
-      // } catch (topicError) {
-      //   error("Failed to unsubscribe from topics: " + topicError.message);
-      // }
+        log(`Unsubscribed user ${userId} from ${userSubscriptions.length} topics`);
+      } catch (topicError) {
+        error("Failed to unsubscribe from topics: " + topicError.message);
+      }
 
       await users.deleteSessions(userId, sessionId);
       return res.json({ success: true, message: 'User logged out successfully' });
