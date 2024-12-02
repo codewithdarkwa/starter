@@ -36,10 +36,12 @@ export default async({req, res, log, error}) => {
         PRODUCT_ANNOUNCEMENT_ID
       ];
 
+      
       let totalUnsubscribed = 0;
 
       try {
         for (const topicId of topicIds) {
+          log(`Topic IDs:${topicId}`);
           try {
             const subscriptions = await messaging.listSubscribers(topicId);
             const userSubscriptions = subscriptions.subscribers.filter(sub => sub.targetId === userId);
