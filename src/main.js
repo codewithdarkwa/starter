@@ -45,7 +45,8 @@ export default async({req, res, log, error}) => {
           try {
             const subscriptions = await messaging.listSubscribers(topicId);
             const userSubscriptions = subscriptions.subscribers.filter(sub => sub.targetId === userId);
-
+         
+            log(userSubscriptions)
             for (const subscription of userSubscriptions) {
               await messaging.deleteSubscriber(subscription.$id);
               totalUnsubscribed++;
