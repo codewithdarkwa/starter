@@ -48,7 +48,7 @@ export default async({req, res, log, error}) => {
          
             log(userSubscriptions)
             for (const subscription of userSubscriptions) {
-              await messaging.deleteSubscriber(subscription.$id);
+              await messaging.deleteSubscriber(topicId, subscription.$id);
               totalUnsubscribed++;
             }
           } catch (topicError) {
