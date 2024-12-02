@@ -1,4 +1,4 @@
-import { Client, Databases, Users, Account } from "node-appwrite";
+import { Client, Databases, Users, Messaging } from "node-appwrite";
 
 const PROJECT_ID = process.env.PROJECT_ID
 const DATABASE_ID = process.env.DATABASE_ID;
@@ -13,7 +13,11 @@ export default async({req, res, log, error}) => {
   .setKey(process.env.APPWRITE_SERVER_API_KEY);
 
 
-  if (req.method == 'POST' && req.path == '/logout') {
+  const users = new Users(client);
+  const db = new Databases(client);
+  const messaging = new Messaging(client);
+
+  if (req.method === 'POST' && req.path === '/logout') {
     try {
       const userId = req.body.userId;
       const sessionId = req.body.sessionId;
@@ -25,8 +29,21 @@ export default async({req, res, log, error}) => {
         }, 400);
       }
 
+      try {
+        const subscriptions = await messaging.listSubscribers();
+        log(subscriptions);
+        const userSubscriptions = subscriptions.subscribers.filter(
+          sub => sub.targetId === userId
+        );
+        for (const subscription of userSubscriptions) {
+          await messaging.deleteSubscriber(subscription.$id);
+        }
 
-      const users = new Users(client);
+        log(`Unsubscribed user ${userId} from ${userSubscriptions.length} topics`);
+      } catch (topicError) {
+        error("Failed to unsubscribe from topics: " + topicError.message);
+      }
+
       await users.deleteSessions(userId, sessionId);
       return res.json({ success: true, message: 'User logged out successfully' });
     } catch (err) {
@@ -34,9 +51,6 @@ export default async({req, res, log, error}) => {
       return res.json({ success: false, message: 'Logout failed' });
     }
   }
-
-  const db = new Databases(client)
-
 
   if(req.method == 'GET'){
     const response = await db.listDocuments(DATABASE_ID, COLLECTION_ID_TASKS);
